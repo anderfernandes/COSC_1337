@@ -6,67 +6,68 @@ using namespace std;
 
 int main()
 {
-  vector <string>sentences;
-  string sentence;
-  // Loading input file into program
-  ifstream inputFile;
-  string input;
+	vector <string>sentences;
+	string sentence;
+	// Loading input file into program
+	ifstream inputFile;
+	bool needFirstUpper = true;
 
-  // Opening file
-  inputFile.open("input.txt", ios::in);
+	// Opening file
+	inputFile.open("input.txt", ios::in);
+	string word;
 
-  // Loading output file into program
-  ofstream filterFile;
-  filterFile.open("filter.txt", ios::out);
+	// Loading output file into program
+	ofstream filterFile;
+	filterFile.open("filter.txt", ios::out);
 
-  
-  if (!inputFile)
-  {
-    cout << "Failed to open file." << endl;
-    return 0;
-  }
+	// 
+	if (!inputFile)
+	{
+		cout << "Failed to open file." << endl;
+		return 0;
+	}
+	// Check for file existence
+	if (!filterFile)
+	{
+		cout << "Failed to open file." << endl;
+		return 0;
+	}
 
-  if (!filterFile)
-  {
-    cout << "Failed to open file." << endl;
-    return 0;
-  }
+	// Reading file contents, looping through each word in the file
+	while (inputFile >> word)
+	{
+		// Loop through each letter
+		for (int i = 0; i < word.length(); i++)
+		{
+			// Make all letters lowercase
+			word[i] = tolower(word[i]);
+		}
 
-  // Reading file contents
-  while (inputFile >> input)
-  {
-    // Check if word has a period in the end, which indicates the end of a sentence
-    sentence += input + " ";
-    cout << input[-1];
-    if (input.back() == '.')
-    {
-      sentences.push_back(sentence);
-      sentence = "";
-    }
-    
-    //filterFile << input << " ";
-  }
+		// If the previous word ended in a period...
+		if (needFirstUpper)	
+		{
+			// ... Set first letter to upper case
+			word[0] = toupper(word[0]);
+			// ... We won't need the next letter to be upper case
+			needFirstUpper = false;
+		}
+		
 
-  for (string word : sentences)
-  {
-    // Check if the first letter is capital
-    if (!isupper(word[0]))
-      // Make them uppercase if they are not
-      word[0] = toupper(word[0]);
-    
-    // Loop through word, skip index 0 because it contains the first letter
-    for (int i = 1; i < word.length(); i++)
-    {
-      // Change all the letters other than the first letter of sentences to lowercase
-      if (!islower(word[i]))
-        input[i] = tolower(input[i]);
-    }
-    
-    cout << word;
-  }
+		// Check if word has a period in the end, which indicates the end of a sentence
+		if (word.back() == '.')
+			// Mark next word to have first letter uppercase
+			needFirstUpper = true;
+		
+		// Add white space to end of the word
+		word.push_back(' ');
+	
+		// Writing word to file
+		filterFile << word;
+	
+	}
 
-  inputFile.close();
-  filterFile.close();
+	inputFile.close();
+	filterFile.close();
 
-  return 0;
+	return 0;
 }
